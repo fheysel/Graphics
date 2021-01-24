@@ -100,9 +100,7 @@ void Lander::draw( mat4 &worldToViewTransform )
     // Use the VAO that was set up above
     glBindVertexArray(VAO);
 
-    mat4 translation_matrix = translate(100, 100, 0);
-
-    mat4 MVP_new = worldToViewTransform * translation_matrix;
+    mat4 MVP_new = worldToViewTransform * translate(position);
 
     glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
 
@@ -159,6 +157,11 @@ void Lander::addThrust( float deltaT )
 
 {
   // YOUR CODE HERE
+    float vel = THRUST_ACCEL * deltaT;
+    velocity.x = velocity.x + (vel * cos(orientation));
+    velocity.y = velocity.y + (vel * tan(orientation));
+    
+    return;
 }
 
 
