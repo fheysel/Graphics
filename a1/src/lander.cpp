@@ -24,6 +24,7 @@
 
 #define CLAMP(min,max,x) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 
+
 // Set up the lander by creating a VAO and rewriting the lander
 // vertices so that the lander is centred at (0,0).
 
@@ -70,28 +71,22 @@ void Lander::setupVAO()
 
   // YOUR CODE HERE
   
-  GLuint lander; // the lander VAO
-  glGenVertexArrays(1, &lander); // Allocate space for the VAO
+  // Allocate space for the VAO
+  glGenVertexArrays(1, &VAO); 
 
-  glBindVertexArray(lander); // Tell opengl to use this specific VAO for the rest of the func
+  // Tell opengl to use this specific VAO for the rest of the function
+  glBindVertexArray(VAO); 
 
-  // Set up the lander's VBO
-  vec3 verts[3];
-  verts[0] = vec3(0, 0, 0); // first triangle
-  verts[1] = vec3(1, 0, 0);
-  verts[2] = vec3(0, 1, 0);
+  // Store the vertices
 
   GLuint VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glBufferData(GL_ARRAY_BUFFER, 2 * numSegments * sizeof(float), &landerVerts[0], GL_DYNAMIC_DRAW);
 
-  glEnableVertexAttribArray(0); // Allow the shader to access the 0th attribute (which is the position). This will 
-                                // be stored in the VAO
-
-  // Unbind everything
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // define the position attribute
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(0);
   glBindVertexArray(0);
 }
 
@@ -102,7 +97,18 @@ void Lander::setupVAO()
 void Lander::draw( mat4 &worldToViewTransform )
 
 {
-  // YOUR CODE HERE
+    // Use the VAO that was set up above
+    glBindVertexArray(VAO);
+
+    mat4 translation_matrix = translate(100, 100, 0);
+
+    mat4 MVP_new = worldToViewTransform * translation_matrix;
+
+    glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
+
+    // Draw lander verticies
+    glDrawArrays(GL_LINES, 0, numSegments*2);
+
 }
 
 
