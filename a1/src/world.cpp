@@ -104,6 +104,18 @@ void World::draw()
   drawStrokeString( ss.str(), -0.95, 0.75, 0.04, glGetUniformLocation( myGPUProgram->id(), "MVP") );
 
   // YOUR CODE HERE (modify the above code, too)
+  ss.str(std::string()); // Clear stream
+  ss << "ALTITUDE: " << 0 << " m";
+  drawStrokeString(ss.str(), 0.5, 0.8, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+  ss.str(std::string()); // Clear stream
+  ss << "HORIZONTAL SPEED ->: " << lander->velocity.x << " m/s";
+  drawStrokeString(ss.str(), 0.2, 0.7, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+  ss.str(std::string()); // Clear stream
+  ss << "VERTICAL SPEED : " << -1*lander->velocity.y << " m/s ?";
+  drawStrokeString(ss.str(), 0.2, 0.6, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
 
 
 }
