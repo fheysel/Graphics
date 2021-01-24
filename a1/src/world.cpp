@@ -1,4 +1,4 @@
-// world.cpp
+﻿// world.cpp
 
 
 #include "world.h"
@@ -100,7 +100,7 @@ void World::draw()
   ss.setf( ios::fixed, ios::floatfield );
   ss.precision(1);
 
-  ss << "SPEED " << lander->speed() << " m/s";
+  ss << "FUEL: " << lander->fuel << " L";
   drawStrokeString( ss.str(), -0.95, 0.75, 0.04, glGetUniformLocation( myGPUProgram->id(), "MVP") );
 
   // YOUR CODE HERE (modify the above code, too)
@@ -109,11 +109,11 @@ void World::draw()
   drawStrokeString(ss.str(), 0.5, 0.8, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
-  ss << "HORIZONTAL SPEED ->: " << lander->velocity.x << " m/s";
+  ss << "HORIZONTAL SPEED: " << lander->velocity.x << " m/s >";
   drawStrokeString(ss.str(), 0.2, 0.7, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
-  ss << "VERTICAL SPEED : " << -1*lander->velocity.y << " m/s ?";
+  ss << "VERTICAL SPEED: " << -1*lander->velocity.y << " m/s \\/";
   drawStrokeString(ss.str(), 0.2, 0.6, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
 
