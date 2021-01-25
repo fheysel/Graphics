@@ -113,7 +113,7 @@ void World::draw()
   drawStrokeString(ss.str(), 0.2, 0.7, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
-  ss << "VERTICAL SPEED: " << -1*lander->velocity.y << " m/s \\/";
+  ss << "VERTICAL SPEED: " << -1*lander->velocity.y << " m/s v";
   drawStrokeString(ss.str(), 0.2, 0.6, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
 
