@@ -58,11 +58,12 @@ void World::updateState(float elapsedTime)
         cout << "Lander height: " << lander->height << endl;
     }
 
-    if (closestDistance <= 10) {
-        cout << "HIT" << endl;
-        lander->velocity = vec3(0, 0, 0);
+    if (closestDistance <= 6) {
+        cout << "HIT" << "Lander height: " << lander->height << endl;
+        lander->stop();
+
     }
-    cout << closestDistance << endl;
+    cout << lander->height << endl;
 }
 
 
@@ -121,8 +122,11 @@ void World::draw()
   drawStrokeString( ss.str(), -0.95, 0.75, 0.04, glGetUniformLocation( myGPUProgram->id(), "MVP") );
 
   // YOUR CODE HERE (modify the above code, too)
+
+  vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
+  float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
   ss.str(std::string()); // Clear stream
-  ss << "ALTITUDE: " << 0 << " m";
+  ss << "ALTITUDE: " << abs(closestDistance - 6) << " m";
   drawStrokeString(ss.str(), 0.5, 0.8, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
