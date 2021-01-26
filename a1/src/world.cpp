@@ -11,47 +11,58 @@
 #include <iomanip>
 
 //const float textAspect = 0.7;	// text width-to-height ratio (you can use this for more realistic text on the screen)
+int x = 0;
 
-
-void World::updateState( float elapsedTime )
+void World::updateState(float elapsedTime)
 
 {
-  // See if any keys are pressed for thrust
+    // See if any keys are pressed for thrust
 
-  if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS) // right arrow
-    lander->rotateCW( elapsedTime );
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) // right arrow
+        lander->rotateCW(elapsedTime);
 
-  if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS) // left arrow
-    lander->rotateCCW( elapsedTime );
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) // left arrow
+        lander->rotateCCW(elapsedTime);
 
-  if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS) // down arrow
-    lander->addThrust( elapsedTime );
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) // down arrow
+        lander->addThrust(elapsedTime);
 
-  // Update the position and velocity
+    // Update the position and velocity
 
-  lander->updatePose( elapsedTime );
+    lander->updatePose(elapsedTime);
 
-  // See if the lander has touched the terrain
+    // See if the lander has touched the terrain
 
-  vec3 closestTerrainPoint = landscape->findClosestPoint( lander->centrePosition() );
-  float closestDistance = ( closestTerrainPoint - lander->centrePosition() ).length();
+    vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
+    float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
 
-  // Find if the view should be zoomed
+    // Find if the view should be zoomed
 
-  zoomView = (closestDistance < ZOOM_RADIUS);
+    zoomView = (closestDistance < ZOOM_RADIUS);
 
-  // Check for landing or collision and let the user know
-  //
-  // Landing is successful if the vertical speed is less than 1 m/s and
-  // the horizontal speed is less than 0.5 m/s.
-  //
-  // SHOULD ALSO CHECK THAT LANDING SURFACE IS HORIZONAL, BUT THIS IS
-  // NOT REQUIRED IN THE ASSIGNMENT.
-  //
-  // SHOULD ALSO CHECK THAT THE LANDER IS VERTICAL, BUT THIS IS NOT
-  // REQUIRED IN THE ASSIGNMENT.
+    // Check for landing or collision and let the user know
+    //
+    // Landing is successful if the vertical speed is less than 1 m/s and
+    // the horizontal speed is less than 0.5 m/s.
+    //
+    // SHOULD ALSO CHECK THAT LANDING SURFACE IS HORIZONAL, BUT THIS IS
+    // NOT REQUIRED IN THE ASSIGNMENT.
+    //
+    // SHOULD ALSO CHECK THAT THE LANDER IS VERTICAL, BUT THIS IS NOT
+    // REQUIRED IN THE ASSIGNMENT.
 
-  // YOUR CODE HERE
+    // YOUR CODE HERE
+    
+    if (x == 0) {
+        x++;
+        cout << "Lander height: " << lander->height << endl;
+    }
+
+    if (closestDistance <= 10) {
+        cout << "HIT" << endl;
+        lander->velocity = vec3(0, 0, 0);
+    }
+    cout << closestDistance << endl;
 }
 
 
@@ -82,6 +93,12 @@ void World::draw()
     // and is 2*ZOOM_RADIUS wide (in world coordinates).
 
     // YOUR CODE HERE
+    float s = 2.0 / ((lander->centrePosition().x +  ZOOM_RADIUS) - (lander->centrePosition().x - ZOOM_RADIUS));
+
+    worldToViewTransform
+        = translate(-1, -1 + BOTTOM_SPACE, 0)
+        * scale(s, s, 1)
+        * translate(-(lander->centrePosition().x - ZOOM_RADIUS), -(lander->centrePosition().y - ZOOM_RADIUS), 0);
   }
 
   // Draw the landscape and lander, passing in the worldToViewTransform

@@ -120,8 +120,29 @@ vec3 Landscape::findClosestPoint( vec3 position, vec3 segTail, vec3 segHead )
   // range.
 
   // YOUR CODE HERE
+  // create 2 vectors
+  vec3 segment = segHead - segTail;
+  vec3 p = position - segTail;
 
-  return vec3(0,0,0);
+  // take dot prod
+  float distance = p * segment.normalize();
+
+  //examine result
+  if (distance <= 0) {
+      return segTail;
+  }
+  else if (distance > segment.length()) {
+      return segHead;
+  }
+  else {
+      float ratio = distance / segment.length();
+      if (ratio <= 0.5) {
+          return segTail;
+      }
+      else {
+          return segHead;
+      }
+  }
 }
 
 
