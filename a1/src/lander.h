@@ -30,6 +30,7 @@ class Lander {
   float width, height;		// lander dimensions in world coordinates
   vec3 velocity;		// velocity in world coordinates (m/s)
   float fuel;
+  bool control_lock;
 
   Lander( float maxX, float maxY ) {
     worldMaxX = maxX;
@@ -37,6 +38,7 @@ class Lander {
     reset();
     setupVAO();
     fuel = 5000;
+    control_lock = FALSE;
   };
 
   void setupVAO();  

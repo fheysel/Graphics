@@ -23,6 +23,9 @@ class World {
 
   char *showMsg;
   int  score;
+  bool mission_success;
+  bool mission_failure;
+
 
  public:
 
@@ -33,6 +36,8 @@ class World {
     window    = w;
     showMsg   = NULL;
     score     = 0;
+    mission_success = false;
+    mission_failure = false;
   }
 
   void draw();

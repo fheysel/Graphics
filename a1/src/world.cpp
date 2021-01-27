@@ -52,18 +52,18 @@ void World::updateState(float elapsedTime)
     // REQUIRED IN THE ASSIGNMENT.
 
     // YOUR CODE HERE
-    
-    if (x == 0) {
-        x++;
-        cout << "Lander height: " << lander->height << endl;
-    }
 
-    if (closestDistance <= 6) {
-        cout << "HIT" << "Lander height: " << lander->height << endl;
+    if (closestDistance <= 6) { // Collision
+        if (lander->velocity.x < 0.5 && lander->velocity.y < 1) {
+            mission_success = true;
+            lander->control_lock = TRUE;
+        }
+        else {
+            mission_failure = true;
+            lander->control_lock = TRUE;
+        }
         lander->stop();
-
     }
-    cout << lander->height << endl;
 }
 
 
@@ -137,6 +137,16 @@ void World::draw()
   ss << "VERTICAL SPEED: " << -1*lander->velocity.y << " m/s v";
   drawStrokeString(ss.str(), 0.2, 0.6, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
+  if (mission_success && !mission_failure) {
+      ss.str(std::string()); // Clear stream
+      ss << "SUCCESS!";
+      drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  }
 
-
+  if (mission_failure) {
+      ss.str(std::string()); // Clear stream
+      ss << "FAILURE!";
+      drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  }
 }
+
