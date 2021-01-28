@@ -55,7 +55,7 @@ void World::updateState(float elapsedTime)
 
     // YOUR CODE HERE
 
-    if (closestDistance <= 6) { // Collision
+    if (closestDistance <= 4.5) { // Collision
         if (lander->velocity.x < 0.5 && lander->velocity.y < 1) {
             mission_success = true;
             lander->control_lock = TRUE;
@@ -129,7 +129,7 @@ void World::draw()
   vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
   float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
   ss.str(std::string()); // Clear stream
-  ss << "ALTITUDE:             " << abs(closestDistance - 6) << " m";
+  ss << "ALTITUDE:             " << abs(closestDistance - 4.5) << " m";
   drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream

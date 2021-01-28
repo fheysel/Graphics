@@ -100,7 +100,6 @@ void Lander::draw( mat4 &worldToViewTransform )
     glBindVertexArray(VAO);
 
     // Update the jetstream
-    cout << thrust << endl;
     landerVerts[3] = -(1 + 100*thrust);
     landerVerts[5] = -(1 + 100*thrust);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);

@@ -135,13 +135,14 @@ vec3 Landscape::findClosestPoint( vec3 position, vec3 segTail, vec3 segHead )
       return segHead;
   }
   else {
-      float ratio = distance / segment.length();
+      return segTail + (distance * segment.normalize());
+      /*float ratio = distance / segment.length();
       if (ratio <= 0.5) {
           return segTail;
       }
       else {
           return segHead;
-      }
+      }*/
   }
 }
 
