@@ -47,8 +47,10 @@ class World {
     mission_success = false;
     mission_failure = false;
     setupArrowVAO();
+    arrowXPosition = vec3(0.67, 0.66, 0);
+    arrowYPosition = vec3(0.6, 0.56, 0);
+    arrowScale = 0.02;
     PI = 3.14159;
-
   }
 
   void draw();

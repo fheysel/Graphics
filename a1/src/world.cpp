@@ -90,10 +90,6 @@ void World::draw()
       * scale( s, s, 1 )
       * translate( -landscape->minX(), -landscape->minY(), 0 );
 
-    arrowXPosition = vec3(0.67, 0.66, 0);
-    arrowYPosition = vec3(0.6, 0.56, 0);
-    arrowScale = 0.02;
-
   } else {
 
     // Find the world-to-view transform that is centred on the lander
@@ -106,10 +102,6 @@ void World::draw()
         = translate(-1, -1 + BOTTOM_SPACE, 0)
         * scale(s, s, 1)
         * translate(-(lander->centrePosition().x - ZOOM_RADIUS), -(lander->centrePosition().y - ZOOM_RADIUS), 0);
-
-    arrowXPosition = vec3(0.67, 0.66, 0);
-    arrowYPosition = vec3(0.6, 0.56, 0);
-    arrowScale = 0.02;
   }
 
   // Draw the landscape and lander, passing in the worldToViewTransform
