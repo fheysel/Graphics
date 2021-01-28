@@ -26,6 +26,14 @@ class World {
   bool mission_success;
   bool mission_failure;
 
+  float PI;
+  GLuint arrowVAO; // VAO for velocity arrows
+  int numArrowVerts;
+  int arrowScale;
+  float arrowOrientation;
+  vec3 arrowXPosition;
+  vec3 arrowYPosition;
+  
 
  public:
 
@@ -38,9 +46,14 @@ class World {
     score     = 0;
     mission_success = false;
     mission_failure = false;
+    setupArrowVAO();
+    PI = 3.14159;
+
   }
 
   void draw();
+
+  void setupArrowVAO();
 
   void updateState( float elapsedTime );
 
@@ -56,6 +69,5 @@ class World {
   float minY() { return 0; }
   float maxY() { return (landscape->maxX() - landscape->minX()) / screenAspect * (2 - BOTTOM_SPACE) / 2; }
 };
-
 
 #endif

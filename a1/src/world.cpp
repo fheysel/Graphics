@@ -26,6 +26,8 @@ void World::updateState(float elapsedTime)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) // down arrow
         lander->addThrust(elapsedTime);
+    else
+        lander->thrust = 0;
 
     // Update the position and velocity
 
@@ -88,6 +90,10 @@ void World::draw()
       * scale( s, s, 1 )
       * translate( -landscape->minX(), -landscape->minY(), 0 );
 
+    arrowXPosition = vec3(825, 780, 0);
+    arrowYPosition = vec3(825, 730, 0);
+    arrowScale = 11;
+
   } else {
 
     // Find the world-to-view transform that is centred on the lander
@@ -100,6 +106,10 @@ void World::draw()
         = translate(-1, -1 + BOTTOM_SPACE, 0)
         * scale(s, s, 1)
         * translate(-(lander->centrePosition().x - ZOOM_RADIUS), -(lander->centrePosition().y - ZOOM_RADIUS), 0);
+
+    arrowXPosition = vec3(825/2, 780/2, 0);
+    arrowYPosition = vec3(825/2, 730/2, 0);
+    arrowScale = 1;
   }
 
   // Draw the landscape and lander, passing in the worldToViewTransform
@@ -126,17 +136,53 @@ void World::draw()
   vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
   float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
   ss.str(std::string()); // Clear stream
-  ss << "ALTITUDE: " << abs(closestDistance - 6) << " m";
-  drawStrokeString(ss.str(), 0.5, 0.8, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  ss << "ALTITUDE:             " << abs(closestDistance - 6) << " m";
+  drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
-  ss << "HORIZONTAL SPEED: " << lander->velocity.x << " m/s >";
-  drawStrokeString(ss.str(), 0.2, 0.7, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  ss << "HORIZONTAL SPEED     " << abs(lander->velocity.x) << " m/s";
+  drawStrokeString(ss.str(), 0.18, 0.65, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
   ss.str(std::string()); // Clear stream
-  ss << "VERTICAL SPEED: " << -1*lander->velocity.y << " m/s v";
-  drawStrokeString(ss.str(), 0.2, 0.6, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  ss << "VERTICAL SPEED       " << abs(lander->velocity.y) << " m/s";
+  drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
+  // Draw velocity arrows in HUD
+  glBindVertexArray(arrowVAO);
+  mat4 MVP_new;
+  
+  // Horizontal arrow
+  if (lander->velocity.x != 0) {
+      if (lander->velocity.x > 0) {
+          arrowOrientation = 3 * PI / 2;
+      }
+      else {
+          arrowOrientation = PI / 2;
+      }
+      MVP_new = worldToViewTransform * translate(arrowXPosition) 
+                                     * scale(arrowScale, arrowScale, 0) 
+                                     * rotate(arrowOrientation, vec3(0, 0, 1));
+      glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
+      glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
+  }
+  
+
+  // Vertical arrow
+  if (lander->velocity.y != 0) {
+      if (lander->velocity.y > 0) {
+          arrowOrientation = 0;
+      }
+      else {
+          arrowOrientation = PI;
+      }
+      MVP_new = worldToViewTransform * translate(arrowYPosition) 
+                                     * scale(arrowScale, arrowScale, 0) 
+                                     * rotate(arrowOrientation, vec3(0, 0, 1));
+      glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
+      glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
+  }
+
+  // Display success or failure message on landing
   if (mission_success && !mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "SUCCESS!";
@@ -150,3 +196,44 @@ void World::draw()
   }
 }
 
+// Create an arrow VAO
+//
+// This needs 'numArrowVerts' and 'arrowVAO' defined in world.h
+
+void World::setupArrowVAO()
+
+{
+    // create an arrow from line segments
+
+    GLfloat arrowVerts[] = {
+      0,    1,    0,    -1,
+      0,    1,    0.5, 0.25,
+      0,    1,   -0.5, 0.25,
+      0.5, 0.25, -0.5, 0.25
+    };
+
+    numArrowVerts = sizeof(arrowVerts) / sizeof(GLfloat);
+
+    // ---- Create a VAO for this object ----
+
+    glGenVertexArrays(1, &arrowVAO);
+    glBindVertexArray(arrowVAO);
+
+    // Store the vertices
+
+    GLuint VBO;
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, numArrowVerts * sizeof(GLfloat), arrowVerts, GL_STATIC_DRAW);
+
+    // define the position attribute
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    // Done
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}

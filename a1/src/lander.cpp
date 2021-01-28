@@ -99,7 +99,7 @@ void Lander::draw( mat4 &worldToViewTransform )
 {
     // Use the VAO that was set up above
     glBindVertexArray(VAO);
-
+        
     mat4 MVP_new = worldToViewTransform * translate(position) * rotate(orientation, vec3(0, 0, 1));
 
     glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
@@ -165,10 +165,14 @@ void Lander::addThrust( float deltaT )
   // YOUR CODE HERE
     if (!control_lock) {
         float vel = THRUST_ACCEL * deltaT;
+        thrust = vel;
         velocity.x = velocity.x - (vel * sin(orientation));
         velocity.y = velocity.y + (vel * cos(orientation));
 
         fuel -= THRUST_FUEL_CONSUMPTION * deltaT;
+
+       /* landerVerts[3] = 881 + thrust * 20000;
+        landerVerts[5] = 881 + thrust * 20000; */       
 
         return;
     }
@@ -183,7 +187,12 @@ void Lander::addThrust( float deltaT )
 
 
 float Lander::landerVerts[] = {
+  
+  // Thrust visual
+  168,881, 174,900,
+  174,900, 179,881,
 
+  // Main lander
   165,859, 157,852,
   157,852, 157,842,
   157,842, 166,834,
