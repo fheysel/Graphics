@@ -135,11 +135,14 @@ void Lander::updatePose( float deltaT )
 void Lander::rotateCW( float deltaT )
 
 {
-    if (!control_lock) {
+    if (!control_lock && fuel > 0) {
         orientation -= ROTATION_SPEED * deltaT;
 
         // YOUR CODE HERE
         fuel -= ROTATIONAL_FUEL_CONSUMPTION * deltaT;
+        if (fuel < 0)
+            fuel = 0;
+
     }
 }
 
@@ -147,11 +150,13 @@ void Lander::rotateCW( float deltaT )
 void Lander::rotateCCW( float deltaT )
 
 {
-    if (!control_lock) {
+    if (!control_lock && fuel > 0) {
         orientation += ROTATION_SPEED * deltaT;
 
         // YOUR CODE HERE
         fuel -= ROTATIONAL_FUEL_CONSUMPTION * deltaT;
+        if (fuel < 0)
+            fuel = 0;
     }
 }
 
@@ -163,13 +168,15 @@ void Lander::addThrust( float deltaT )
 
 {
   // YOUR CODE HERE
-    if (!control_lock) {
+    if (!control_lock && fuel > 0) {
         float vel = THRUST_ACCEL * deltaT;
         thrust = vel;
         velocity.x = velocity.x - (vel * sin(orientation));
         velocity.y = velocity.y + (vel * cos(orientation));
 
         fuel -= THRUST_FUEL_CONSUMPTION * deltaT;
+        if (fuel < 0)
+            fuel = 0;
 
        /* landerVerts[3] = 881 + thrust * 20000;
         landerVerts[5] = 881 + thrust * 20000; */       

@@ -102,6 +102,7 @@ void World::draw()
         = translate(-1, -1 + BOTTOM_SPACE, 0)
         * scale(s, s, 1)
         * translate(-(lander->centrePosition().x - ZOOM_RADIUS), -(lander->centrePosition().y - ZOOM_RADIUS), 0);
+
   }
 
   // Draw the landscape and lander, passing in the worldToViewTransform
