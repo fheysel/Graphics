@@ -79,7 +79,6 @@ void Lander::setupVAO()
 
   // Store the vertices
 
-  GLuint VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, 2 * numSegments * sizeof(float), &landerVerts[0], GL_DYNAMIC_DRAW);
@@ -99,6 +98,18 @@ void Lander::draw( mat4 &worldToViewTransform )
 {
     // Use the VAO that was set up above
     glBindVertexArray(VAO);
+
+    // Update the jetstream
+    cout << thrust << endl;
+    landerVerts[3] = -(1 + 100*thrust);
+    landerVerts[5] = -(1 + 100*thrust);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, 2 * numSegments * sizeof(float), &landerVerts[0], GL_DYNAMIC_DRAW);
+
+    // define the position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    
         
     mat4 MVP_new = worldToViewTransform * translate(position) * rotate(orientation, vec3(0, 0, 1));
 
@@ -106,6 +117,8 @@ void Lander::draw( mat4 &worldToViewTransform )
 
     // Draw lander verticies
     glDrawArrays(GL_LINES, 0, numSegments*2);
+
+    glBindVertexArray(0);
 
 }
 
