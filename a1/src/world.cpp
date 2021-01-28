@@ -90,9 +90,9 @@ void World::draw()
       * scale( s, s, 1 )
       * translate( -landscape->minX(), -landscape->minY(), 0 );
 
-    arrowXPosition = vec3(825, 780, 0);
-    arrowYPosition = vec3(825, 730, 0);
-    arrowScale = 11;
+    arrowXPosition = vec3(0.67, 0.66, 0);
+    arrowYPosition = vec3(0.6, 0.56, 0);
+    arrowScale = 0.02;
 
   } else {
 
@@ -107,9 +107,9 @@ void World::draw()
         * scale(s, s, 1)
         * translate(-(lander->centrePosition().x - ZOOM_RADIUS), -(lander->centrePosition().y - ZOOM_RADIUS), 0);
 
-    arrowXPosition = vec3(825/2, 780/2, 0);
-    arrowYPosition = vec3(825/2, 730/2, 0);
-    arrowScale = 1;
+    arrowXPosition = vec3(0.67, 0.66, 0);
+    arrowYPosition = vec3(0.6, 0.56, 0);
+    arrowScale = 0.02;
   }
 
   // Draw the landscape and lander, passing in the worldToViewTransform
@@ -159,9 +159,9 @@ void World::draw()
       else {
           arrowOrientation = PI / 2;
       }
-      MVP_new = worldToViewTransform * translate(arrowXPosition) 
-                                     * scale(arrowScale, arrowScale, 0) 
-                                     * rotate(arrowOrientation, vec3(0, 0, 1));
+      MVP_new = translate(arrowXPosition) 
+                * scale(arrowScale, arrowScale, 0) 
+                * rotate(arrowOrientation, vec3(0, 0, 1));
       glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
       glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
   }
@@ -175,9 +175,9 @@ void World::draw()
       else {
           arrowOrientation = PI;
       }
-      MVP_new = worldToViewTransform * translate(arrowYPosition) 
-                                     * scale(arrowScale, arrowScale, 0) 
-                                     * rotate(arrowOrientation, vec3(0, 0, 1));
+      MVP_new = translate(arrowYPosition) 
+                * scale(arrowScale, arrowScale, 0) 
+                * rotate(arrowOrientation, vec3(0, 0, 1));
       glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
       glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
   }

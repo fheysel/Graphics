@@ -29,7 +29,7 @@ class World {
   float PI;
   GLuint arrowVAO; // VAO for velocity arrows
   int numArrowVerts;
-  int arrowScale;
+  float arrowScale;
   float arrowOrientation;
   vec3 arrowXPosition;
   vec3 arrowYPosition;
