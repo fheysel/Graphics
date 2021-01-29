@@ -60,6 +60,8 @@ class World {
   void updateState( float elapsedTime );
 
   void resetLander() {
+    mission_success = false;
+    mission_failure = false;
     lander->reset();
   }
 

@@ -188,10 +188,7 @@ void Lander::addThrust( float deltaT )
 
         fuel -= THRUST_FUEL_CONSUMPTION * deltaT;
         if (fuel < 0)
-            fuel = 0;
-
-       /* landerVerts[3] = 881 + thrust * 20000;
-        landerVerts[5] = 881 + thrust * 20000; */       
+            fuel = 0;   
 
         return;
     }

@@ -29,6 +29,7 @@ class Lander {
 
   float width, height;		// lander dimensions in world coordinates
   vec3 velocity;		// velocity in world coordinates (m/s)
+  vec3 velocityBeforeLanding; // velocity just before landing saved for display
   float fuel;
   bool control_lock;
   float thrust;
@@ -54,6 +55,7 @@ class Lander {
 #if 1  // production				
     position = vec3( 0.05 * worldMaxX, 0.7 * worldMaxY, 0.0  );
     velocity = vec3( 30.0f, 0.0f, 0.0f );
+    control_lock = false;
 #else  // debug
     position = vec3( 762, 48, 0 );
     velocity = vec3( 0, -2, 0 );

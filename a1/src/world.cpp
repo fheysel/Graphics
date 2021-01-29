@@ -56,7 +56,12 @@ void World::updateState(float elapsedTime)
     // YOUR CODE HERE
 
     if (closestDistance <= 4.5) { // Collision
-        if (lander->velocity.x < 0.5 && lander->velocity.y < 1) {
+        if (!(mission_success || mission_failure)) {
+            lander->velocityBeforeLanding = lander->velocity; // Record last known velocity before collision
+        }
+
+        if (abs(lander->velocityBeforeLanding.x) < 0.5 && abs(lander->velocityBeforeLanding.y < 1) && !mission_failure) {
+            cout << lander->velocity.x << ", " << lander->velocity.y << endl;
             mission_success = true;
             lander->control_lock = TRUE;
         }
@@ -126,66 +131,99 @@ void World::draw()
 
   // YOUR CODE HERE (modify the above code, too)
 
-  vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
-  float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
-  ss.str(std::string()); // Clear stream
-  ss << "ALTITUDE:             " << abs(closestDistance - 4.5) << " m";
-  drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+  if (!mission_success && !mission_failure) {
+      // Draw HUD while game is in progress
+      vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
+      float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
+      ss.str(std::string()); // Clear stream
+      ss << "ALTITUDE:             " << abs(closestDistance - 4.5) << " m";
+      drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
-  ss.str(std::string()); // Clear stream
-  ss << "HORIZONTAL SPEED     " << abs(lander->velocity.x) << " m/s";
-  drawStrokeString(ss.str(), 0.18, 0.65, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      ss.str(std::string()); // Clear stream
+      ss << "HORIZONTAL SPEED     " << abs(lander->velocity.x) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.65, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
-  ss.str(std::string()); // Clear stream
-  ss << "VERTICAL SPEED       " << abs(lander->velocity.y) << " m/s";
-  drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      ss.str(std::string()); // Clear stream
+      ss << "VERTICAL SPEED       " << abs(lander->velocity.y) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
-  // Draw velocity arrows in HUD
-  glBindVertexArray(arrowVAO);
-  mat4 MVP_new;
-  
-  // Horizontal arrow
-  if (lander->velocity.x != 0) {
-      if (lander->velocity.x > 0) {
-          arrowOrientation = 3 * PI / 2;
+
+      // Draw velocity arrows in HUD
+      glBindVertexArray(arrowVAO);
+      mat4 MVP_new;
+
+      // Horizontal arrow
+      if (lander->velocity.x > 0.05 || lander->velocity.x < -0.05) { // if x velocity is not ~= 0
+          if (lander->velocity.x > 0) {
+              arrowOrientation = 3 * PI / 2;
+          }
+          else {
+              arrowOrientation = PI / 2;
+          }
+          MVP_new = translate(arrowXPosition)
+              * scale(arrowScale, arrowScale, 0)
+              * rotate(arrowOrientation, vec3(0, 0, 1));
+          glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
+          glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
       }
-      else {
-          arrowOrientation = PI / 2;
+
+
+      // Vertical arrow
+      if (lander->velocity.y != 0) {
+          if (lander->velocity.y > 0) {
+              arrowOrientation = 0;
+          }
+          else {
+              arrowOrientation = PI;
+          }
+          MVP_new = translate(arrowYPosition)
+              * scale(arrowScale, arrowScale, 0)
+              * rotate(arrowOrientation, vec3(0, 0, 1));
+          glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
+          glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
       }
-      MVP_new = translate(arrowXPosition) 
-                * scale(arrowScale, arrowScale, 0) 
-                * rotate(arrowOrientation, vec3(0, 0, 1));
-      glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
-      glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
   }
   
 
-  // Vertical arrow
-  if (lander->velocity.y != 0) {
-      if (lander->velocity.y > 0) {
-          arrowOrientation = 0;
-      }
-      else {
-          arrowOrientation = PI;
-      }
-      MVP_new = translate(arrowYPosition) 
-                * scale(arrowScale, arrowScale, 0) 
-                * rotate(arrowOrientation, vec3(0, 0, 1));
-      glUniformMatrix4fv(glGetUniformLocation(myGPUProgram->id(), "MVP"), 1, GL_TRUE, &MVP_new[0][0]);
-      glDrawArrays(GL_LINES, 0, numArrowVerts * 2);
-  }
+  
 
-  // Display success or failure message on landing
+  // Display success or failure message and HUD on landing
   if (mission_success && !mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "SUCCESS!";
       drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      // Draw HUD based on last known values
+      ss.str(std::string()); // Clear stream
+      ss << "ALTITUDE:             0 m";
+      drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      ss.str(std::string()); // Clear stream
+      ss << "HORIZONTAL SPEED     " << abs(lander->velocityBeforeLanding.x) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.65, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      ss.str(std::string()); // Clear stream
+      ss << "VERTICAL SPEED       " << abs(lander->velocityBeforeLanding.y) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
   }
 
   if (mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "FAILURE!";
       drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      // Draw HUD based on last known values
+      ss.str(std::string()); // Clear stream
+      ss << "ALTITUDE:             0 m";
+      drawStrokeString(ss.str(), 0.18, 0.75, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      ss.str(std::string()); // Clear stream
+      ss << "HORIZONTAL SPEED     " << abs(lander->velocityBeforeLanding.x) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.65, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      ss.str(std::string()); // Clear stream
+      ss << "VERTICAL SPEED       " << abs(lander->velocityBeforeLanding.y) << " m/s";
+      drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
   }
 }
 
