@@ -62,6 +62,7 @@ class World {
   void resetLander() {
     mission_success = false;
     mission_failure = false;
+    score = 0;
     lander->reset();
   }
 

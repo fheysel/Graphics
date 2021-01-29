@@ -60,8 +60,7 @@ void World::updateState(float elapsedTime)
             lander->velocityBeforeLanding = lander->velocity; // Record last known velocity before collision
         }
 
-        if (abs(lander->velocityBeforeLanding.x) < 0.5 && abs(lander->velocityBeforeLanding.y < 1) && !mission_failure) {
-            cout << lander->velocity.x << ", " << lander->velocity.y << endl;
+        if (abs(lander->velocityBeforeLanding.x) < 0.5 && abs(lander->velocityBeforeLanding.y) < 1.0) {
             mission_success = true;
             lander->control_lock = TRUE;
         }
@@ -187,11 +186,37 @@ void World::draw()
 
   
 
-  // Display success or failure message and HUD on landing
+  // Display success message and HUD on landing
   if (mission_success && !mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "SUCCESS!";
-      drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      drawStrokeString(ss.str(), -0.35, 0.35, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      
+      // Score calculation
+      if (lander->fuel >= 4500)
+          score = 1000;
+      else if (lander->fuel < 4500 && lander->fuel >= 4000)
+          score = 900;
+      else if (lander->fuel < 4000 && lander->fuel >= 3500)
+          score = 800;
+      else if (lander->fuel < 3500 && lander->fuel >= 3000)
+          score = 700;
+      else if (lander->fuel < 3000 && lander->fuel >= 2500)
+          score = 600;
+      else if (lander->fuel < 2500 && lander->fuel >= 2000)
+          score = 500;
+      else if (lander->fuel < 2000 && lander->fuel >= 1500)
+          score = 400;
+      else if (lander->fuel < 1500 && lander->fuel >= 1000)
+          score = 300;
+      else if (lander->fuel < 1000 && lander->fuel >= 500)
+          score = 200;
+      else
+          score = 100;
+
+      ss.str(std::string()); // Clear stream
+      ss << score << " Points";
+      drawStrokeString(ss.str(), -0.15, 0.25, 0.075, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
       // Draw HUD based on last known values
       ss.str(std::string()); // Clear stream
@@ -207,10 +232,17 @@ void World::draw()
       drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
   }
 
+  // Display failure message and HUD on landing
   if (mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "FAILURE!";
-      drawStrokeString(ss.str(), -0.3, 0.3, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      drawStrokeString(ss.str(), -0.35, 0.35, 0.15, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      int score = (lander->fuel / 5000) - abs(lander->velocityBeforeLanding.x) - abs(lander->velocityBeforeLanding.y);
+      score = max(0, score);
+      ss.str(std::string()); // Clear stream
+      ss << "0 Points";
+      drawStrokeString(ss.str(), -0.15, 0.25, 0.075, glGetUniformLocation(myGPUProgram->id(), "MVP"));
 
       // Draw HUD based on last known values
       ss.str(std::string()); // Clear stream

@@ -33,6 +33,7 @@ class Lander {
   float fuel;
   bool control_lock;
   float thrust;
+  int score;
 
   Lander( float maxX, float maxY ) {
     worldMaxX = maxX;
@@ -42,6 +43,7 @@ class Lander {
     fuel = 5000;
     control_lock = FALSE;
     thrust = 0;
+    score = 0;
   };
 
   void setupVAO();  
