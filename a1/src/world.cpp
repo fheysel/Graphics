@@ -78,6 +78,7 @@ void World::draw()
 
 {
   mat4 worldToViewTransform;
+  ftime(&thisTime);
 
   if (!zoomView) {
 
@@ -130,8 +131,9 @@ void World::draw()
 
   // YOUR CODE HERE (modify the above code, too)
 
+  // Draw HUD while game is in progress
   if (!mission_success && !mission_failure) {
-      // Draw HUD while game is in progress
+      
       vec3 closestTerrainPoint = landscape->findClosestPoint(lander->centrePosition());
       float closestDistance = (closestTerrainPoint - lander->centrePosition()).length();
       ss.str(std::string()); // Clear stream
@@ -145,6 +147,16 @@ void World::draw()
       ss.str(std::string()); // Clear stream
       ss << "VERTICAL SPEED       " << abs(lander->velocity.y) << " m/s";
       drawStrokeString(ss.str(), 0.18, 0.55, 0.04, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+
+      // Low fuel warning
+      float elapsedSeconds = (thisTime.time + thisTime.millitm / 1000.0) - (prevTime.time + prevTime.millitm / 1000.0);
+      if (lander->fuel < 2000 && elapsedSeconds > 1) {
+          if(elapsedSeconds > 2)
+              prevTime = thisTime;
+          ss.str(std::string()); // Clear stream
+          ss << "LOW FUEL!";
+          drawStrokeString(ss.str(), -0.15, 0.3, 0.06, glGetUniformLocation(myGPUProgram->id(), "MVP"));
+      }
 
 
       // Draw velocity arrows in HUD
@@ -186,7 +198,7 @@ void World::draw()
 
   
 
-  // Display success message and HUD on landing
+  // Display HUD and success message on landing
   if (mission_success && !mission_failure) {
       ss.str(std::string()); // Clear stream
       ss << "SUCCESS!";

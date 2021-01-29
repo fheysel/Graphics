@@ -4,6 +4,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <sys/timeb.h>
 
 #include "headers.h"
 #include "landscape.h"
@@ -25,6 +26,8 @@ class World {
   int  score;
   bool mission_success;
   bool mission_failure;
+
+  struct timeb prevTime, thisTime; // Used for blinking low fuel warning
 
   float PI;
   GLuint arrowVAO; // VAO for velocity arrows
@@ -51,6 +54,7 @@ class World {
     arrowYPosition = vec3(0.6, 0.56, 0);
     arrowScale = 0.02;
     PI = 3.14159;
+    ftime(&prevTime);
   }
 
   void draw();
